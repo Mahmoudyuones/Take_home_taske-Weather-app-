@@ -1,0 +1,61 @@
+# ===============================
+# Environment & Secrets
+# ===============================
+.env
+
+# ===============================
+# Dart / Flutter
+# ===============================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+
+# ===============================
+# IDEs & Editors
+# ===============================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# ===============================
+# Android
+# ===============================
+android/.gradle/
+android/local.properties
+android/key.properties
+android/**/debug/
+android/**/profile/
+android/**/release/
+*.jks
+
+# ===============================
+# iOS / macOS
+# ===============================
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+.DS_Store
+
+# ===============================
+# Logs & Temp Files
+# ===============================
+*.log
+*.swp
+*.tmp
+
+# ===============================
+# Miscellaneous
+# ===============================
+*.class
+*.pyc
+.app
+.swiftpm/
+.svn/
