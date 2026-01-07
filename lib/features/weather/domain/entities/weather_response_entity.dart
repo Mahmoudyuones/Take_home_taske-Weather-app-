@@ -1,9 +1,9 @@
-import 'package:take_home_task/features/weather/domain/models/clouds_entity.dart';
-import 'package:take_home_task/features/weather/domain/models/coord_entity.dart';
-import 'package:take_home_task/features/weather/domain/models/main_entity.dart';
-import 'package:take_home_task/features/weather/domain/models/sys_entity.dart';
-import 'package:take_home_task/features/weather/domain/models/weather_entity.dart';
-import 'package:take_home_task/features/weather/domain/models/wind_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/clouds_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/coord_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/main_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/sys_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/weather_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/wind_entity.dart';
 
 class WeatherResponseEntity {
   final CoordEntity coord;

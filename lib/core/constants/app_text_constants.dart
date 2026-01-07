@@ -9,5 +9,12 @@ class AppTextConstants {
   static const String feelsLike = 'Feels like';
   static const String humidity = 'Humidity';
   static const String wind = 'Wind';
+  static const String searchCity = 'Search for a city...';
+  static const String useCurrentLocation = 'Use Current Location';
+  static const String autoDetectLocation = 'Automatically detect your location';
+  static const String selectLocation = 'Select Location';
+  static const String chooseLocationDescription =
+      'Choose your location to get accurate weather information';
+  static const String savedCities = 'Saved Cities';
   static const String noWeatherDataAvailable = 'No Weather Data Available';
 }

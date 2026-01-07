@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:take_home_task/core/constants/app_text_constants.dart';
 import 'package:take_home_task/core/theme/app_colors.dart';
 import 'package:take_home_task/core/theme/app_theme.dart';
-import 'package:take_home_task/features/weather/domain/models/weather_response_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/weather_response_entity.dart';
 import 'package:take_home_task/features/weather/presentation/view/widgets/weather_detail_card_widget.dart';
 
 class WeatherWidget extends StatelessWidget {

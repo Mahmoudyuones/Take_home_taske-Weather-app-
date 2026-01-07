@@ -62,4 +62,52 @@ class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSourceContract {
       return BaseResponse<ForecastResponseDto>.failure(ErrorHandler.handle(e));
     }
   }
+
+  @override
+  Future<BaseResponse<WeatherResponseDto>> getCityWeather({
+    required String cityName,
+  }) async {
+    try {
+      final WeatherResponseDto response = await _apiClient.getWeatherByCity(
+        cityName,
+        ApiConstants.apiKey,
+        'metric',
+      );
+
+      log('success getCurrentCityWeather api response: ${response.toJson()}');
+      return BaseResponse<WeatherResponseDto>.success(response);
+    } on TypeError catch (e, stackTrace) {
+      log('Type error in API getCurrentCityWeather response: $e');
+      log('Stack trace: $stackTrace');
+      return BaseResponse<WeatherResponseDto>.failure(ErrorHandler.handle(e));
+    } catch (e, stackTrace) {
+      log('failed api getCurrentCityWeather response: $e');
+      log('Stack trace: $stackTrace');
+      return BaseResponse<WeatherResponseDto>.failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<BaseResponse<ForecastResponseDto>> getForcasetWeather({
+    required String cityName,
+  }) async {
+    try {
+      final ForecastResponseDto response = await _apiClient.getForecastByCity(
+        cityName,
+        ApiConstants.apiKey,
+        'metric',
+      );
+
+      log('success api getCurrentCityForcaset response: ${response.toJson()}');
+      return BaseResponse<ForecastResponseDto>.success(response);
+    } on TypeError catch (e, stackTrace) {
+      log('Type error in API getCurrentCityForcaset response: $e');
+      log('Stack trace: $stackTrace');
+      return BaseResponse<ForecastResponseDto>.failure(ErrorHandler.handle(e));
+    } catch (e, stackTrace) {
+      log('failed api getCurrentCityForcaset response: $e');
+      log('Stack trace: $stackTrace');
+      return BaseResponse<ForecastResponseDto>.failure(ErrorHandler.handle(e));
+    }
+  }
 }

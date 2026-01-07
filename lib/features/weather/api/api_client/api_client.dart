@@ -26,4 +26,16 @@ abstract class ApiClient {
     @Query("appid") String apiKey,
     @Query("units") String units,
   );
+  @GET(ApiConstants.weatherEndpoint)
+  Future<WeatherResponseDto> getWeatherByCity(
+    @Query('q') String cityName,
+    @Query('appid') String apiKey,
+    @Query('units') String units,
+  );
+  @GET(ApiConstants.forecastEndpoint)
+  Future<ForecastResponseDto> getForecastByCity(
+    @Query('q') String cityName,
+    @Query('appid') String apiKey,
+    @Query('units') String units,
+  );
 }

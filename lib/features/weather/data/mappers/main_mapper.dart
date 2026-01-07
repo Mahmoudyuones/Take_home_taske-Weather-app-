@@ -1,5 +1,5 @@
 import 'package:take_home_task/features/weather/data/models/main_dto.dart';
-import 'package:take_home_task/features/weather/domain/models/main_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/main_entity.dart';
 
 extension MainMapper on MainDto {
   MainEntity toEntity() {

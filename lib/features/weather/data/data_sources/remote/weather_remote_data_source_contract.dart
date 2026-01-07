@@ -11,4 +11,10 @@ abstract class WeatherRemoteDataSourceContract {
     required double lat,
     required double lon,
   });
+  Future<BaseResponse<WeatherResponseDto>> getCityWeather({
+    required String cityName,
+  });
+  Future<BaseResponse<ForecastResponseDto>> getForcasetWeather({
+    required String cityName,
+  });
 }

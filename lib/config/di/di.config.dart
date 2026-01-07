@@ -22,6 +22,10 @@ import '../../features/weather/data/data_sources/remote/weather_remote_data_sour
     as _i298;
 import '../../features/weather/data/repo/weather_repo_impl.dart' as _i384;
 import '../../features/weather/domain/repo/weather_repo_contract.dart' as _i788;
+import '../../features/weather/domain/use_cases/get_city_forcast_usecase.dart'
+    as _i751;
+import '../../features/weather/domain/use_cases/get_city_weather_usecase.dart'
+    as _i884;
 import '../../features/weather/domain/use_cases/get_current_city_forcast_usecase.dart'
     as _i109;
 import '../../features/weather/domain/use_cases/get_current_city_weather_usecase.dart'
@@ -66,10 +70,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i912.GetCurrentCityWeatherUsecase>(
       () => _i912.GetCurrentCityWeatherUsecase(gh<_i788.WeatherRepoContract>()),
     );
+    gh.factory<_i751.GetCityForcastUsecase>(
+      () => _i751.GetCityForcastUsecase(gh<_i788.WeatherRepoContract>()),
+    );
+    gh.factory<_i884.GetCityWeatherUsecase>(
+      () => _i884.GetCityWeatherUsecase(gh<_i788.WeatherRepoContract>()),
+    );
     gh.factory<_i289.WeatherViewModel>(
       () => _i289.WeatherViewModel(
         gh<_i912.GetCurrentCityWeatherUsecase>(),
         gh<_i109.GetCurrentCityForcastUsecase>(),
+        gh<_i751.GetCityForcastUsecase>(),
+        gh<_i884.GetCityWeatherUsecase>(),
         gh<_i752.LocationService>(),
       ),
     );

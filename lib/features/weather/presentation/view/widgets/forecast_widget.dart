@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:take_home_task/core/theme/app_colors.dart';
-import 'package:take_home_task/features/weather/domain/models/forecast_response_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/forecast_response_entity.dart';
 import 'package:take_home_task/features/weather/presentation/view/widgets/forecast_item_widget.dart';
 
 class ForecastWidget extends StatelessWidget {

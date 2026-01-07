@@ -5,7 +5,7 @@ import 'package:take_home_task/features/weather/data/mappers/sys_mapper.dart';
 import 'package:take_home_task/features/weather/data/mappers/weather_mapper.dart';
 import 'package:take_home_task/features/weather/data/mappers/wind_mapper.dart';
 import 'package:take_home_task/features/weather/data/models/weather_response_dto.dart';
-import 'package:take_home_task/features/weather/domain/models/weather_response_entity.dart';
+import 'package:take_home_task/features/weather/domain/entities/weather_response_entity.dart';
 
 extension WeatherResponseMapper on WeatherResponseDto {
   WeatherResponseEntity toEntity() {
