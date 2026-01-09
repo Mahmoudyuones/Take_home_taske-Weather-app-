@@ -15,7 +15,7 @@ class CurrentLocationCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.pushReplacement(AppRoutesConstants.weather);
+        context.go(AppRoutesConstants.weather);
       },
       child: Container(
         padding: EdgeInsets.all(screenWidth * 0.04),

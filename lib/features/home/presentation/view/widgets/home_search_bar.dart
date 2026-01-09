@@ -49,7 +49,7 @@ class HomeSearchBar extends StatelessWidget {
         ),
         onSubmitted: (value) {
           if (value.trim().isNotEmpty) {
-            context.push(
+            context.go(
               AppRoutesConstants.weather,
               extra: {AppRoutesConstants.cityName: value.trim()},
             );

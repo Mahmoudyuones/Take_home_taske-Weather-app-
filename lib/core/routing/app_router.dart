@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:take_home_task/core/constants/app_routes_constants.dart';
 import 'package:take_home_task/features/home/presentation/view/screens/home_screen.dart';
@@ -5,7 +6,7 @@ import 'package:take_home_task/features/weather/presentation/view/screens/weathe
 
 class AppRouter {
   static GoRouter router = GoRouter(
-    initialLocation: AppRoutesConstants.initialLocation,
+    initialLocation: AppRoutesConstants.weather,
     routes: [
       GoRoute(
         path: AppRoutesConstants.initialLocation,
@@ -16,7 +17,8 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final cityName = extra?[AppRoutesConstants.cityName] as String?;
-          return WeatherScreen(cityName: cityName);
+
+          return WeatherScreen(key: ValueKey(cityName), cityName: cityName);
         },
       ),
     ],

@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:take_home_task/config/di/di.dart';
+import 'package:take_home_task/core/constants/api_constants.dart';
 import 'package:take_home_task/core/constants/app_assets_pathes.dart';
 import 'package:take_home_task/core/constants/app_routes_constants.dart';
 import 'package:take_home_task/core/constants/app_text_constants.dart';
-import 'package:take_home_task/core/services/avorites_service.dart';
 import 'package:take_home_task/core/theme/app_colors.dart';
 import 'package:take_home_task/core/theme/app_theme.dart';
 import 'package:take_home_task/core/widgets/custom_error_widget.dart';
 import 'package:take_home_task/core/widgets/loading_widget.dart';
+import 'package:take_home_task/features/home/presentation/home_view_model/home_events.dart';
+import 'package:take_home_task/features/home/presentation/home_view_model/home_states.dart';
+import 'package:take_home_task/features/home/presentation/home_view_model/home_view_model.dart';
 import 'package:take_home_task/features/weather/presentation/view/widgets/forecast_widget.dart';
 import 'package:take_home_task/features/weather/presentation/view/widgets/weather_widget.dart';
-import 'package:take_home_task/features/weather/presentation/view_model/home_events.dart';
-import 'package:take_home_task/features/weather/presentation/view_model/home_states.dart';
-import 'package:take_home_task/features/weather/presentation/view_model/home_view_model.dart';
+import 'package:take_home_task/features/weather/presentation/view_model/weather_events.dart';
+import 'package:take_home_task/features/weather/presentation/view_model/weather_states.dart';
+import 'package:take_home_task/features/weather/presentation/view_model/weather_view_model.dart';
 
 class WeatherScreen extends StatefulWidget {
   final String? cityName;
@@ -26,65 +29,45 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  final WeatherViewModel viewModel = getIt<WeatherViewModel>();
-  bool isFavorite = false;
+  final WeatherViewModel weatherViewModel = getIt<WeatherViewModel>();
+  final HomeViewModel favoritesViewModel = getIt<HomeViewModel>();
 
-  void _toggleFavorite(String currentCityName) async {
-    if (currentCityName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Loading location data. Please try again.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+  String? _currentCityName;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentCityName = widget.cityName;
+  }
+
+  void _onFavoriteClicked(
+    BuildContext context,
+    List<String> favorites,
+    String cityName,
+    bool isFavorite,
+  ) {
+    final favoritesBloc = context.read<HomeViewModel>();
+
+    if (isFavorite) {
+      favoritesBloc.doIntent(RemoveFavoriteEvent(cityName));
+      setState(() {});
       return;
     }
 
-    // Get the ACTUAL current state from Hive
-    final isCurrentlyFavorite = FavoritesService.isFavorite(currentCityName);
-
-    // If not a favorite and trying to add, check if we can add more
-    if (!isCurrentlyFavorite && !FavoritesService.canAddMore()) {
+    if (favorites.length >= ApiConstants.maxFavorites) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Maximum 6 favorites reached. Remove one to add more.'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(
+            'You can only add up to ${ApiConstants.maxFavorites} favorite cities',
+          ),
           backgroundColor: Colors.orange,
         ),
       );
       return;
     }
 
-    // Toggle favorite
-    final success = await FavoritesService.toggleFavorite(currentCityName);
-
-    if (success) {
-      // Update local state to match what's actually in Hive
-      final newFavoriteState = FavoritesService.isFavorite(currentCityName);
-
-      setState(() {
-        isFavorite = newFavoriteState;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            newFavoriteState
-                ? '$currentCityName added to favorites'
-                : '$currentCityName removed from favorites',
-          ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to update favorites'),
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    favoritesBloc.doIntent(AddFavoriteEvent(cityName));
+    setState(() {});
   }
 
   @override
@@ -92,27 +75,28 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final textTheme = AppTheme.appTheme.textTheme;
-
-    // Check if cityName is valid (not null and not empty)
     final bool hasValidCityName = widget.cityName?.trim().isNotEmpty ?? false;
 
-    return BlocProvider<WeatherViewModel>(
-      create: (context) {
-        if (hasValidCityName) {
-          // Use city name if provided
-          return viewModel
-            ..doIntent(GetCityWeatherEvent(widget.cityName!))
-            ..doIntent(GetCityForecastEvent(widget.cityName!));
-        } else {
-          // Use current location if city name is null or empty
-          return viewModel
-            ..doIntent(GetCurrenCityWeatherEvent())
-            ..doIntent(GetCurrenCityForcastEvent());
-        }
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<WeatherViewModel>(
+          create: (context) {
+            if (hasValidCityName) {
+              return weatherViewModel
+                ..doIntent(GetCityWeatherEvent(widget.cityName!))
+                ..doIntent(GetCityForecastEvent(widget.cityName!));
+            } else {
+              return weatherViewModel
+                ..doIntent(GetCurrenCityWeatherEvent())
+                ..doIntent(GetCurrenCityForcastEvent());
+            }
+          },
+        ),
+        BlocProvider<HomeViewModel>.value(
+          value: favoritesViewModel..doIntent(GetFavoriteCitiesEvent()),
+        ),
+      ],
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-
         body: Stack(
           children: [
             Positioned.fill(
@@ -123,16 +107,81 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 height: double.infinity,
               ),
             ),
-
             Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
                     child: SafeArea(
-                      bottom: false,
-
                       child: Column(
                         children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * .05,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.search,
+                                    color: AppColors.white,
+                                    size: screenWidth * 0.07,
+                                  ),
+                                  onPressed: () {
+                                    context.go(
+                                      AppRoutesConstants.initialLocation,
+                                    );
+                                  },
+                                ),
+                                BlocBuilder<HomeViewModel, HomeStates>(
+                                  buildWhen: (previous, current) =>
+                                      previous.favoriteCitiesState !=
+                                      current.favoriteCitiesState,
+                                  builder: (context, state) {
+                                    final favorites =
+                                        state.favoriteCitiesState?.data ?? [];
+
+                                    final cityName = _currentCityName;
+
+                                    if (cityName == null || cityName.isEmpty) {
+                                      return IconButton(
+                                        icon: Icon(
+                                          Icons.favorite_border,
+                                          color: AppColors.white,
+                                          size: screenWidth * 0.07,
+                                        ),
+                                        onPressed: null,
+                                      );
+                                    }
+
+                                    final bool isFavorite = favorites.contains(
+                                      cityName,
+                                    );
+
+                                    return IconButton(
+                                      icon: Icon(
+                                        isFavorite
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: isFavorite
+                                            ? Colors.red
+                                            : AppColors.white,
+                                        size: screenWidth * 0.07,
+                                      ),
+                                      onPressed: () {
+                                        _onFavoriteClicked(
+                                          context,
+                                          favorites,
+                                          cityName,
+                                          isFavorite,
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
                           BlocBuilder<WeatherViewModel, WeatherStates>(
                             buildWhen: (previous, current) =>
                                 previous.weatherResponseEntity !=
@@ -163,56 +212,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               }
 
                               if (weatherState?.data != null) {
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: screenWidth * .05,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          IconButton(
-                                            icon: Icon(
-                                              Icons.search,
-                                              color: AppColors.white,
-                                              size: screenWidth * 0.07,
-                                            ),
-                                            onPressed: () {
-                                              context.go(
-                                                AppRoutesConstants
-                                                    .initialLocation,
-                                              );
-                                            },
-                                          ),
-                                          SizedBox(width: screenWidth * 0.02),
-                                          IconButton(
-                                            icon: Icon(
-                                              isFavorite
-                                                  ? Icons.favorite
-                                                  : Icons.favorite_border,
-                                              color: isFavorite
-                                                  ? Colors.red
-                                                  : AppColors.white,
-                                              size: screenWidth * 0.07,
-                                            ),
-                                            onPressed: () {
-                                              _toggleFavorite(
-                                                state
-                                                    .weatherResponseEntity!
-                                                    .data!
-                                                    .name,
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    WeatherWidget(
-                                      weatherData: weatherState!.data!,
-                                    ),
-                                  ],
+                                // Update current city name from weather data
+                                final cityNameFromData =
+                                    weatherState!.data!.name;
+                                if (_currentCityName != cityNameFromData) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _currentCityName = cityNameFromData;
+                                    });
+                                  });
+                                }
+
+                                return WeatherWidget(
+                                  weatherData: weatherState.data!,
                                 );
                               }
                               return Center(
@@ -230,9 +244,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               );
                             },
                           ),
-
                           SizedBox(height: screenHeight * 0.025),
-
                           BlocBuilder<WeatherViewModel, WeatherStates>(
                             buildWhen: (previous, current) =>
                                 previous.forecastResponseEntity !=
@@ -272,7 +284,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               return const SizedBox.shrink();
                             },
                           ),
-
                           SizedBox(height: screenHeight * 0.025),
                         ],
                       ),

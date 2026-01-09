@@ -8,8 +8,8 @@ import 'package:take_home_task/features/weather/domain/use_cases/get_city_forcas
 import 'package:take_home_task/features/weather/domain/use_cases/get_city_weather_usecase.dart';
 import 'package:take_home_task/features/weather/domain/use_cases/get_current_city_forcast_usecase.dart';
 import 'package:take_home_task/features/weather/domain/use_cases/get_current_city_weather_usecase.dart';
-import 'package:take_home_task/features/weather/presentation/view_model/home_events.dart';
-import 'package:take_home_task/features/weather/presentation/view_model/home_states.dart';
+import 'package:take_home_task/features/weather/presentation/view_model/weather_events.dart';
+import 'package:take_home_task/features/weather/presentation/view_model/weather_states.dart';
 
 @injectable
 class WeatherViewModel extends Cubit<WeatherStates> {
